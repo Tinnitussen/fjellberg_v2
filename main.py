@@ -267,9 +267,14 @@ def main(write = False, local = False):
     notification = False
     if num_iterations<6 and snow-num_iterations>4:
         notification = True
+        print('other')
     if daily_summary:
+        print('daily_summary')
         notification = True
     if notification is True or snow>8:
+        print('Check')
+        print(notification)
+        print(snow)
         # Making dictionary for notification from data
         data_dict = {
         'num_iterations': f'{num_iterations}', 'snow': f'{snow:.2f}', 'sum_precipitation': f'{sum_precipitation:.2f}',
