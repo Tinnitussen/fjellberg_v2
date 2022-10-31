@@ -3,7 +3,6 @@ import requests
 from datetime import datetime, timedelta
 import time
 from trycourier import Courier
-import creds
 import os
 
 # Function for making API call
