@@ -39,4 +39,4 @@ jobs:
           AUTH_TOKEN_COURIER_24: ${{secrets.AUTH_TOKEN_COURIER_24}}
           DAILY_SUMMARY: True
           GITHUB_ACTIONS: True
-        run: python f_api_24.py
+        run: python main.py
