@@ -1,4 +1,5 @@
-  # irute.no
+import os
+# irute.no
 client_id_rute = os.environ.get('CLIENT_ID_RUTE')
 client_secret_rute = os.environ.get('CLIENT_SECRET_RUTE')
 # frost API
