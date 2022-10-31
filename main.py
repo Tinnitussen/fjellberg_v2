@@ -3,7 +3,6 @@ import requests
 from datetime import datetime, timedelta
 import time
 from trycourier import Courier
-import os
 import creds
 
 # Function for making API call
@@ -39,7 +38,7 @@ def api_call(url:str, parameters='', id='', secret=''):
             reason = json['error']['reason']
             print(f'Message: {message}')
             print(f'Reason: {reason}')
-            time.sleep(180)
+            time.sleep(20)
             count+=1
             continue
     return json
