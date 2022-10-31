@@ -38,6 +38,4 @@ jobs:
           CLIENT_SECRET_FROST: ${{secrets.CLIENT_SECRET_FROST}}
           AUTH_TOKEN_COURIER_24: ${{secrets.AUTH_TOKEN_COURIER_24}}
           DAILY_SUMMARY: True
-        run: |
-        python creds.py
-        python main.py
+        run: python main.py
