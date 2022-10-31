@@ -3,8 +3,8 @@ import requests
 from datetime import datetime, timedelta
 import time
 from trycourier import Courier
-import creds
 import os
+import creds
 
 # Function for making API call
 def api_call(url:str, parameters='', id='', secret=''):
@@ -54,37 +54,18 @@ def read_file(filnavn:str):
 
 def main(write = False, local = False):
     """Run the program"""
-    
-    # Check to see if it is running on github actions
-    github_actions = os.environ.get('GITHUB_ACTIONS')
-
-    if github_actions:
-        # Credentials for running on github
-        # irute.no
-        client_id_rute = os.environ.get('CLIENT_ID_RUTE')
-        client_secret_rute = os.environ.get('CLIENT_SECRET_RUTE')
-        # frost API
-        client_id_frost = os.environ.get('CLIENT_ID_FROST')
-        client_secret_frost = os.environ.get('CLIENT_SECRET_FROST')
-        # Checking to see if daily summary should be run
-        daily_summary = os.environ.get('DAILY_SUMMARY')
-        # Courier
-        auth_token_courier = os.environ.get('AUTH_TOKEN_COURIER')
-        auth_token_courier_24 = os.environ.get('AUTH_TOKEN_COURIER_24')
-
-    else:
-        # Credentials for running locally
-        # irute.no
-        client_id_rute = creds.client_id_rute
-        client_secret_rute = creds.client_secret_rute
-        # frost API
-        client_id_frost = creds.client_id_frost
-        client_secret_frost = creds.client_secret_frost
-        # Courier
-        auth_token_courier = creds.auth_token_courier
-        auth_token_courier_24 = creds.auth_token_courier_24
-        # Daily email
-        daily_summary = creds.daily_summary
+    # Credentials
+    # irute.no
+    client_id_rute = creds.client_id_rute
+    client_secret_rute = creds.client_secret_rute
+    # frost API
+    client_id_frost = creds.client_id_frost
+    client_secret_frost = creds.client_secret_frost
+    # Courier
+    auth_token_courier = creds.auth_token_courier
+    auth_token_courier_24 = creds.auth_token_courier_24
+    # Daily email
+    daily_summary = creds.daily_summary
     
     if local is True and write is True:
         print('"Local" cannot be true when "write" is true.')
