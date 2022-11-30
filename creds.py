@@ -10,3 +10,5 @@ daily_summary = os.environ.get('DAILY_SUMMARY')
 # Courier
 auth_token_courier = os.environ.get('AUTH_TOKEN_COURIER')
 auth_token_courier_24 = os.environ.get('AUTH_TOKEN_COURIER_24')
+# Spreadsheet ID
+sheet_id = os.environ.get('SHEET_ID')

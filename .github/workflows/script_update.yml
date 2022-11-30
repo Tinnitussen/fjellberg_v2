@@ -1,10 +1,10 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Summary 24
+name: Oppdatere mail-liste
 
 # Controls when the workflow will run
 on:
-  #Run every day at 05:30 UTC (07:30 CET)
+  #Run every day at 04:54 UTC (05:54 CET)
   schedule:
   - cron:  '54 04 * * *'
 
@@ -32,10 +32,6 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run script
         env:
-          CLIENT_ID_RUTE: ${{secrets.CLIENT_ID_RUTE}}
-          CLIENT_SECRET_RUTE: ${{secrets.CLIENT_SECRET_RUTE}}
-          CLIENT_ID_FROST: ${{secrets.CLIENT_ID_FROST}}
-          CLIENT_SECRET_FROST: ${{secrets.CLIENT_SECRET_FROST}}
-          AUTH_TOKEN_COURIER_24: ${{secrets.AUTH_TOKEN_COURIER_24}}
-          DAILY_SUMMARY: True
-        run: python main.py
+          AUTH_TOKEN_COURIER: ${{secrets.AUTH_TOKEN_COURIER_24}}
+          SHEET_ID: ${{secrets.SHEET_ID}}
+        run: python update.py

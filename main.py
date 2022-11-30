@@ -3,7 +3,6 @@ import requests
 from datetime import datetime, timedelta
 import time
 from trycourier import Courier
-import os
 import creds
 
 # Function for making API call
@@ -286,7 +285,8 @@ def main(write = False, local = False):
         #Auth with courier
         if not daily_summary:
             client = Courier(auth_token=auth_token_courier)
-            mailing_list = [{'email': 'kjelli.jossang2@gmail.com'}]
+            list_id = 'fjellberg_daily'
+            mailing_list = [{'list_id': list_id}]
             template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
             resp = client.send_message(
                 message = {
@@ -299,7 +299,8 @@ def main(write = False, local = False):
 
         else:
             client = Courier(auth_token=auth_token_courier_24)
-            mailing_list = [{'email': 'kjelli.jossang2@gmail.com'}]
+            list_id = 'fjellberg_daily'
+            mailing_list = [{'list_id': list_id}]
             template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
             resp = client.send_message(
                 message = {

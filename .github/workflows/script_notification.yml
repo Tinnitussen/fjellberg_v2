@@ -5,7 +5,7 @@ name: Værvarsel
 # Controls when the workflow will run
 on:
 
-# Run every hour at the 0th minute
+# Run every hour at the 53th minute
   schedule:
   - cron:  '53 * * * *'
 
