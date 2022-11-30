@@ -231,6 +231,8 @@ def main(write = False, local = False):
     avg_wind_speed = sum(data_dictionary['wind_speed'])/len(data_dictionary['wind_speed'])
     # Temp
     avg_temp = sum(data_dictionary["air_temperature"])/len(data_dictionary["air_temperature"])
+    max_temp = max(data_dictionary["air_temperature"])
+    min_temp = min(data_dictionary["air_temperature"])
     # Snow
     overall_snow_delta = (data_dictionary["surface_snow_thickness"][0]-
     data_dictionary["surface_snow_thickness"][-1])
@@ -247,6 +249,8 @@ def main(write = False, local = False):
     print(f'Nedbør som snø siste {num_iterations} timer: {snow} cm')
     print(f'Nedbør som regn siste {num_iterations} timer: {sum_precipitation} mm')
     print(f'Gjennomsnittlig temperatur siste {num_iterations} timer: {avg_temp:.2f} C')
+    print(f'Høyeste temperatur: {max_temp} C')
+    print(f'Laveste temperatur: {min_temp} C')
     print(f'Gjennomsnittlig vindstyrke siste {num_iterations} timer: {avg_wind_speed:.2f} m/s')
     print(f'Høyeste vindstyrke: {overall_max_wind_speed} m/s. Måling: {timestamp_omws}')
     print(f'Snøhøyde delta: {overall_snow_delta} cm. '
@@ -279,7 +283,7 @@ def main(write = False, local = False):
         'overall_max_wind_speed': f'{overall_max_wind_speed}', 'timestamp_omws': f'{timestamp_omws}',
         'last_timestamp': f'{last_timestamp}', 'first_timestamp': f'{first_timestamp}',
         'overall_snow_delta': f'{overall_snow_delta}', 'snow_height_first': f'{snow_height_first}',
-        'snow_height_last': f'{snow_height_last}'
+        'snow_height_last': f'{snow_height_last}', 'max_temp': f'{max_temp}', 'min_temp': f'{min_temp}'
         }
 
         #Auth with courier
