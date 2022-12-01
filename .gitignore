@@ -10,6 +10,7 @@ __pycache__
 data_frost.json
 data_rute.json
 .vscode/
+creds_local.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

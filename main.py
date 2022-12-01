@@ -95,10 +95,12 @@ def main(write = False, local = False):
         data_frost = api_call(endpoint_frost, parameters_frost, client_id_frost, client_secret_frost)
 
     if write is True:
-        filnavn_rute = 'data_rute.json'
+        if not daily_summary:
+            filnavn_rute = 'data_rute.json'
+            write_file(filnavn_rute, data_rute)
         filnavn_frost = 'data_frost.json'
-        write_file(filnavn_rute, data_rute)
         write_file(filnavn_frost, data_frost)
+
 
     if local is True:
         filnavn_rute = 'data_rute.json'
@@ -267,7 +269,7 @@ def main(write = False, local = False):
             print('(!)Conversion is done in the data processing(!)')
 
     # Conditions for notification
-    notification = False
+    notification = True
     if num_iterations<6 and snow-num_iterations>4:
         notification = True
     if daily_summary:
@@ -289,7 +291,7 @@ def main(write = False, local = False):
         #Auth with courier
         if not daily_summary:
             client = Courier(auth_token=auth_token_courier)
-            list_id = 'fjellberg_daily'
+            list_id = 'testing'
             mailing_list = [{'list_id': list_id}]
             template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
             resp = client.send_message(
@@ -303,7 +305,7 @@ def main(write = False, local = False):
 
         else:
             client = Courier(auth_token=auth_token_courier_24)
-            list_id = 'fjellberg_daily'
+            list_id = 'testing'
             mailing_list = [{'list_id': list_id}]
             template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
             resp = client.send_message(
@@ -322,4 +324,4 @@ def main(write = False, local = False):
     #"wind_speed"
     #"max(wind_speed PT1H)"
 if __name__=="__main__":
-    main(write=False, local=False)
+    main(write=True, local=False)
