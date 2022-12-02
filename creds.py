@@ -1,4 +1,7 @@
 import os
+if os.path.exists('creds_local.py'):
+    import creds_local
+    creds_local.set_environment()
 # irute.no
 client_id_rute = os.environ.get('CLIENT_ID_RUTE')
 client_secret_rute = os.environ.get('CLIENT_SECRET_RUTE')

@@ -95,10 +95,12 @@ def main(write = False, local = False):
         data_frost = api_call(endpoint_frost, parameters_frost, client_id_frost, client_secret_frost)
 
     if write is True:
-        filnavn_rute = 'data_rute.json'
+        if not daily_summary:
+            filnavn_rute = 'data_rute.json'
+            write_file(filnavn_rute, data_rute)
         filnavn_frost = 'data_frost.json'
-        write_file(filnavn_rute, data_rute)
         write_file(filnavn_frost, data_frost)
+
 
     if local is True:
         filnavn_rute = 'data_rute.json'
@@ -142,8 +144,16 @@ def main(write = False, local = False):
     snow = 0
     data_frost = data_frost['data']
     referenceTime_dict = {}
+    # Initialize the element values to empty lists to avoid errors if data from frost API is incomplete
     data_dictionary = {}
     missing_data_dict = {}
+    missing_data = False
+    element_list = ["air_temperature", "sum(precipitation_amount PT1H)",
+                    "surface_snow_thickness", "wind_speed", "max(wind_speed PT1H)"]
+    for element in element_list:
+        data_dictionary[element] = []
+        missing_data_dict[element] = []
+    # Process data from frost API
     for i, data in enumerate(reversed(data_frost)):
         if i == num_iterations:
             break
@@ -153,72 +163,48 @@ def main(write = False, local = False):
         print(timestamp)
         referenceTime_dict[i] = timestamp
         data = data['observations']
-        for observation in data:
-            if observation['elementId'] not in data_dictionary.keys():
-                data_dictionary[observation['elementId']] = [observation['value']]
 
-            else:
+        observation_list = []
+        for observation in data:
                 data_dictionary[observation['elementId']].append(observation['value'])
+                observation_list.append(observation['elementId'])
+        
+        # Missing data
+        skip = False
+        for element in element_list:
+            if element not in observation_list:
+                missing_data = True
+                missing_data_dict[element].append(timestamp)
+                print(f'{element} MISSING!')
+                if element in ["air_temperature", "sum(precipitation_amount PT1H)","surface_snow_thickness"]:
+                    print('(!!!)skip(!!!)')
+                    skip = True
+        if skip is True:
+            print()
+            continue
 
         # Samle en informasjon fra en måling
-        try:
-            temperature = data_dictionary['air_temperature'][-1]
-            print(f'Lufttemperatur: {temperature} C')
-        except KeyError:
-            missing_data = 'air_temperature'
-            print(f'{missing_data}: MISSING DATA')
-            if timestamp not in missing_data_dict.keys():
-                missing_data_dict[timestamp] = [missing_data]
-            else:
-                missing_data_dict[timestamp].append(missing_data)
-        try:
-            precipitation = data_dictionary["sum(precipitation_amount PT1H)"][-1]
-            print(f'Nedbør: {precipitation} mm')
-        except KeyError:
-            missing_data = 'sum(precipitation_amount PT1H)'
-            print(f'{missing_data}: MISSING DATA')
-            if timestamp not in missing_data_dict.keys():
-                missing_data_dict[timestamp] = [missing_data]
-            else:
-                missing_data_dict[timestamp].append(missing_data)
-        try:
-            snow_height = data_dictionary["surface_snow_thickness"][-1]
-            print(f'Snøhøyde: {snow_height} cm')
-        except KeyError:
-            missing_data = 'surface_snow_thickness'
-            print(f'{missing_data}: MISSING DATA')
-            if timestamp not in missing_data_dict.keys():
-                missing_data_dict[timestamp] = [missing_data]
-            else:
-                missing_data_dict[timestamp].append(missing_data)
-        try:
+        temperature = data_dictionary['air_temperature'][-1]
+        print(f'Lufttemperatur: {temperature} C')
+        precipitation = data_dictionary["sum(precipitation_amount PT1H)"][-1]
+        print(f'Nedbør: {precipitation} mm')
+        snow_height = data_dictionary["surface_snow_thickness"][-1]
+        print(f'Snøhøyde: {snow_height} cm')
+        if len(data_dictionary["wind_speed"])>0:
             wind_speed = data_dictionary["wind_speed"][-1]
             print(f'Vindstyrke: {wind_speed} m/s')
-        except KeyError:
-            missing_data = 'wind_speed'
-            print(f'{missing_data}: MISSING DATA')
-            if timestamp not in missing_data_dict.keys():
-                missing_data_dict[timestamp] = [missing_data]
-            else:
-                missing_data_dict[timestamp].append(missing_data)
-        try:
+        if len(data_dictionary["max(wind_speed PT1H)"])>0:
             max_wind_speed = data_dictionary["max(wind_speed PT1H)"][-1]
             print(f'Sterkeste vindkast: {max_wind_speed} m/s\n')
-        except KeyError:
-            missing_data = 'max(wind_speed PT1H)'
-            print(f'{missing_data}: MISSING DATA')
-            if timestamp not in missing_data_dict.keys():
-                missing_data_dict[timestamp] = [missing_data]
-            else:
-                missing_data_dict[timestamp].append(missing_data)
-
+        else:
+            print()
         # Converting to precipitation to snow under certain conditions
         if len(data_dictionary["surface_snow_thickness"])>1:
             delta_snow_1h = (data_dictionary["surface_snow_thickness"][-1]-
             data_dictionary["surface_snow_thickness"][-2])
         else:
             delta_snow_1h = 0
-    
+
         if temperature<1 and delta_snow_1h>=0:
             snow += precipitation
     
@@ -259,13 +245,15 @@ def main(write = False, local = False):
     print(f'Første måling: {first_timestamp}')
 
     # Missing data
-    if missing_data_dict:
-        for timestamp in missing_data_dict:
-            print('-'*20)
-            print(f'Missing data at {timestamp} UTC +1.\nElement(s) missing: {missing_data_dict[timestamp]}')
-            print('This time is in UTC+1. Time in raw data is UTC.')
-            print('(!)Conversion is done in the data processing(!)')
-
+    if missing_data is True:
+        for element in missing_data_dict:
+            if len(missing_data_dict[element])>0:
+                for index in range(len(missing_data_dict[element])):
+                    print('-'*20)
+                    print(f'Missing data at {missing_data_dict[element][index]} UTC +1.\nElement(s) missing: {element}')
+                    print('This time is in UTC+1. Time in raw data is UTC.')
+                    print('(!)Conversion is done in the data processing(!)')
+                    
     # Conditions for notification
     notification = False
     if num_iterations<6 and snow-num_iterations>4:
@@ -289,7 +277,7 @@ def main(write = False, local = False):
         #Auth with courier
         if not daily_summary:
             client = Courier(auth_token=auth_token_courier)
-            list_id = 'fjellberg_daily'
+            list_id = 'testing'
             mailing_list = [{'list_id': list_id}]
             template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
             resp = client.send_message(
@@ -303,7 +291,7 @@ def main(write = False, local = False):
 
         else:
             client = Courier(auth_token=auth_token_courier_24)
-            list_id = 'fjellberg_daily'
+            list_id = 'testing'
             mailing_list = [{'list_id': list_id}]
             template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
             resp = client.send_message(
@@ -314,7 +302,6 @@ def main(write = False, local = False):
                 }
             )
             print(resp["requestId"])
-
     
     #"air_temperature"
     #"sum(precipitation_amount PT1H)"
