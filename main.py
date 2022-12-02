@@ -9,11 +9,8 @@ import creds
 def api_call(url:str, parameters='', id='', secret=''):
     """API call for collecting JSON data"""
 
-    # Making counter to limit tries
     count = 0
-
     while True:
-        # Making get request
         try:
             api_data = requests.get(url, parameters, auth=(id, secret))
         
@@ -53,18 +50,6 @@ def read_file(filnavn:str):
 
 def main(write = False, local = False):
     """Run the program"""
-    # Credentials
-    # irute.no
-    client_id_rute = creds.client_id_rute
-    client_secret_rute = creds.client_secret_rute
-    # frost API
-    client_id_frost = creds.client_id_frost
-    client_secret_frost = creds.client_secret_frost
-    # Courier
-    auth_token_courier = creds.auth_token_courier
-    auth_token_courier_24 = creds.auth_token_courier_24
-    # Daily email
-    daily_summary = creds.daily_summary
 
     if local is True and write is True:
         print('"Local" cannot be true when "write" is true.')
@@ -72,10 +57,10 @@ def main(write = False, local = False):
         quit()
     
     if local is False:
-        if not daily_summary:
+        if not creds.daily_summary:
             # API call irute.no
             endpoint_rute = 'https://kart.irute.net/fjellbergsskardet_busses.json?_=1651561338966'
-            data_rute = api_call(endpoint_rute, id=client_id_rute, secret=client_secret_rute)
+            data_rute = api_call(endpoint_rute, id=creds.client_id_rute, secret=creds.client_secret_rute)
 
         # API call frost API
         endpoint_frost = 'https://frost.met.no/observations/v0.jsonld'
@@ -92,10 +77,10 @@ def main(write = False, local = False):
             'maxage': 'P1D',
             'limit': '24'
         }
-        data_frost = api_call(endpoint_frost, parameters_frost, client_id_frost, client_secret_frost)
+        data_frost = api_call(endpoint_frost, parameters_frost, creds.client_id_frost, creds.client_secret_frost)
 
     if write is True:
-        if not daily_summary:
+        if not creds.daily_summary:
             filnavn_rute = 'data_rute.json'
             write_file(filnavn_rute, data_rute)
         filnavn_frost = 'data_frost.json'
@@ -108,7 +93,7 @@ def main(write = False, local = False):
         data_frost = read_file(filnavn_frost)
         data_rute = read_file(filnavn_rute)
     
-    if not daily_summary:
+    if not creds.daily_summary:
         # Data processing irute.no. Finding most recent snow removal.
         data_rute = data_rute['features']
         latest_snow_removal = None
@@ -258,7 +243,7 @@ def main(write = False, local = False):
     notification = False
     if num_iterations<6 and snow-num_iterations>4:
         notification = True
-    if daily_summary:
+    if creds.daily_summary:
         notification = True
     if notification is True or snow>8:
         print('Notification information:')
@@ -275,8 +260,8 @@ def main(write = False, local = False):
         }
 
         #Auth with courier
-        if not daily_summary:
-            client = Courier(auth_token=auth_token_courier)
+        if not creds.daily_summary:
+            client = Courier(auth_token=creds.auth_token_courier)
             list_id = 'fjellberg_daily'
             mailing_list = [{'list_id': list_id}]
             template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
@@ -290,7 +275,7 @@ def main(write = False, local = False):
             print(resp["requestId"])
 
         else:
-            client = Courier(auth_token=auth_token_courier_24)
+            client = Courier(auth_token=creds.auth_token_courier_24)
             list_id = 'fjellberg_daily'
             mailing_list = [{'list_id': list_id}]
             template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
