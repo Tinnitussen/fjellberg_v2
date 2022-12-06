@@ -15,3 +15,10 @@ auth_token_courier = os.environ.get('AUTH_TOKEN_COURIER')
 auth_token_courier_24 = os.environ.get('AUTH_TOKEN_COURIER_24')
 # Spreadsheet ID
 sheet_id = os.environ.get('SHEET_ID')
+# Twitter
+twitter_api_key = os.environ.get('TWITTER_API_KEY')
+twitter_api_key_secret = os.environ.get('TWITTER_API_KEY_SECRET')
+twitter_bearer_token = os.environ.get('TWITTER_BEARER_TOKEN')
+twitter_access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
+twitter_access_token_secret = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
+twitter_notification = os.environ.get('TWITTER_NOTIFICATION')

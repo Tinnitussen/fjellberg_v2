@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import time
 from trycourier import Courier
 import creds
+import tweepy
 
 # Function for making API call
 def api_call(url:str, parameters='', id='', secret=''):
@@ -40,13 +41,16 @@ def api_call(url:str, parameters='', id='', secret=''):
             continue
     return json
 
+
 def write_file(filnavn:str, data):
     with open(filnavn,'w') as outfile:
        json.dump(data, outfile, indent=2)
 
+
 def read_file(filnavn:str):
     with open(filnavn, 'r') as openfile:
         return json.load(openfile)
+
 
 def main(write = False, local = False):
     """Run the program"""
@@ -245,6 +249,8 @@ def main(write = False, local = False):
         notification = True
     if creds.daily_summary:
         notification = True
+    if creds.twitter_notification:
+        notification = True
     if notification is True or snow>8:
         print('Notification information:')
         print(f'Snow: {snow}')
@@ -260,9 +266,9 @@ def main(write = False, local = False):
         }
 
         #Auth with courier
-        if not creds.daily_summary:
+        if not creds.daily_summary and not creds.twitter_notification:
             client = Courier(auth_token=creds.auth_token_courier)
-            list_id = 'fjellberg_daily'
+            list_id = 'testing'
             mailing_list = [{'list_id': list_id}]
             template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
             resp = client.send_message(
@@ -273,10 +279,28 @@ def main(write = False, local = False):
                 }
             )
             print(resp["requestId"])
+        
+        elif creds.twitter_notification:
+            twitter_str = ("Været på Gullingen siste 24t\n"
+                            f"{first_timestamp}\n"
+                            f"{last_timestamp}\n"
+                            f"Snø: {snow:.1f} cm\n"
+                            f"Regn: {sum_precipitation:.1f} mm\n"
+                            f"Snitt.temp: {avg_temp:.1f} °C\n"
+                            f"Max temp: {max_temp:.1f} °C\n"
+                            f"Min temp: {min_temp:.1f} °C\n"
+                            f"Vind: {avg_wind_speed:.1f} m/s\n"
+                            f"Sterkeste vindkast: {overall_max_wind_speed:.1f} m/s\n"
+                            f"Endring i snødybde: {overall_snow_delta} cm\n"
+                            f"Fra {snow_height_first} cm til {snow_height_last} cm")
+            # Set the tweepy client
+            api = tweepy.Client(None, creds.twitter_api_key, creds.twitter_api_key_secret,
+            creds.twitter_access_token, creds.twitter_access_token_secret)
+            api.create_tweet(text=twitter_str)
 
         else:
             client = Courier(auth_token=creds.auth_token_courier_24)
-            list_id = 'fjellberg_daily'
+            list_id = 'testing'
             mailing_list = [{'list_id': list_id}]
             template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
             resp = client.send_message(
@@ -293,5 +317,7 @@ def main(write = False, local = False):
     #"surface_snow_thickness"
     #"wind_speed"
     #"max(wind_speed PT1H)"
+
+
 if __name__=="__main__":
     main(write=False, local=False)
