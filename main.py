@@ -258,7 +258,7 @@ def main(write = False, local = False):
         print(f'Num iterations: {num_iterations}') 
         # Making dictionary for notification from data
         data_dict = {
-        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.2f}', 'sum_precipitation': f'{sum_precipitation:.2f}',
+        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.2f}', 'rain': f'{rain:.2f}',
         'avg_temp': f'{avg_temp:.2f}', 'avg_wind_speed': f'{avg_wind_speed:.2f}', 
         'overall_max_wind_speed': f'{overall_max_wind_speed}', 'timestamp_omws': f'{timestamp_omws}',
         'last_timestamp': f'{last_timestamp}', 'first_timestamp': f'{first_timestamp}',
@@ -286,7 +286,7 @@ def main(write = False, local = False):
                             f"{first_timestamp}\n"
                             f"{last_timestamp}\n"
                             f"Snø: {snow:.1f} cm\n"
-                            f"Regn: {sum_precipitation:.1f} mm\n"
+                            f"Regn: {rain:.1f} mm\n"
                             f"Snitt.temp: {avg_temp:.1f} °C\n"
                             f"Max temp: {max_temp:.1f} °C\n"
                             f"Min temp: {min_temp:.1f} °C\n"
