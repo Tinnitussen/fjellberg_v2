@@ -131,6 +131,7 @@ def main(write = False, local = False):
         num_iterations = 24
     # Data processing
     snow = 0
+    rain = 0
     data_frost = data_frost['data']
     referenceTime_dict = {}
     # Initialize the element values to empty lists to avoid errors if data from frost API is incomplete
@@ -196,6 +197,8 @@ def main(write = False, local = False):
 
         if temperature<1 and delta_snow_1h>=0:
             snow += precipitation
+        else:
+            rain += precipitation
     
     
     # Summary
@@ -213,8 +216,6 @@ def main(write = False, local = False):
     data_dictionary["surface_snow_thickness"][-1])
     snow_height_first = data_dictionary["surface_snow_thickness"][0]
     snow_height_last = data_dictionary["surface_snow_thickness"][-1]
-    # Rain
-    sum_precipitation = sum(data_dictionary['sum(precipitation_amount PT1H)'])
     # Time
     first_timestamp = referenceTime_dict[max(referenceTime_dict.keys())]
     last_timestamp = referenceTime_dict[0]
@@ -222,7 +223,7 @@ def main(write = False, local = False):
     print('DATA SUMMARY')
     print('--------------------------')
     print(f'Nedbør som snø siste {num_iterations} timer: {snow} cm')
-    print(f'Nedbør som regn siste {num_iterations} timer: {sum_precipitation} mm')
+    print(f'Nedbør som regn siste {num_iterations} timer: {rain} mm')
     print(f'Gjennomsnittlig temperatur siste {num_iterations} timer: {avg_temp:.2f} C')
     print(f'Høyeste temperatur: {max_temp} C')
     print(f'Laveste temperatur: {min_temp} C')
@@ -268,7 +269,7 @@ def main(write = False, local = False):
         #Auth with courier
         if not creds.daily_summary and not creds.twitter_notification:
             client = Courier(auth_token=creds.auth_token_courier)
-            list_id = 'testing'
+            list_id = 'fjellberg_daily'
             mailing_list = [{'list_id': list_id}]
             template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
             resp = client.send_message(
@@ -300,7 +301,7 @@ def main(write = False, local = False):
 
         else:
             client = Courier(auth_token=creds.auth_token_courier_24)
-            list_id = 'testing'
+            list_id = 'fjellberg_daily'
             mailing_list = [{'list_id': list_id}]
             template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
             resp = client.send_message(
