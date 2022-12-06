@@ -52,25 +52,6 @@ def read_file(filnavn:str):
         return json.load(openfile)
 
 
-def tweet(first_timestamp, last_timestamp, snow, sum_precipitation, avg_temp, max_temp, min_temp, avg_wind_speed,
-overall_max_wind_speed, overall_snow_delta, snow_height_first, snow_height_last):
-    twitter_str = f'''Været på Gullingen siste 24t\n\
-{first_timestamp}\n\
-{last_timestamp}\n\
-Snø: {snow} mm\n\
-Regn: {sum_precipitation} mm\n\
-Gjennomsnittstemp: {avg_temp} °C\n\
-Høyeste temp: {max_temp} °C\n\
-Laveste temp: {min_temp} °C\n\
-Vind: {avg_wind_speed} m/s\n\
-Sterkeste vindkast: {overall_max_wind_speed} m/s\n\
-Endring i snødybde: {overall_snow_delta} cm\n\
-{snow_height_first} cm til {snow_height_last} cm'''
-    # Set the tweepy client
-    api = tweepy.Client(None, creds.twitter_api_key, creds.twitter_api_key_secret,
-    creds.twitter_access_token, creds.twitter_access_token_secret)
-    api.create_tweet(text=twitter_str)
-
 def main(write = False, local = False):
     """Run the program"""
 
