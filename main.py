@@ -131,6 +131,7 @@ def main(write = False, local = False):
         num_iterations = 24
     # Data processing
     snow = 0
+    rain = 0
     data_frost = data_frost['data']
     referenceTime_dict = {}
     # Initialize the element values to empty lists to avoid errors if data from frost API is incomplete
@@ -187,15 +188,10 @@ def main(write = False, local = False):
             print(f'Sterkeste vindkast: {max_wind_speed} m/s\n')
         else:
             print()
-        # Converting to precipitation to snow under certain conditions
-        if len(data_dictionary["surface_snow_thickness"])>1:
-            delta_snow_1h = (data_dictionary["surface_snow_thickness"][-1]-
-            data_dictionary["surface_snow_thickness"][-2])
-        else:
-            delta_snow_1h = 0
-
-        if temperature<1 and delta_snow_1h>=0:
+        if temperature<1:
             snow += precipitation
+        else:
+            rain += precipitation
     
     
     # Summary
@@ -211,10 +207,8 @@ def main(write = False, local = False):
     # Snow
     overall_snow_delta = (data_dictionary["surface_snow_thickness"][0]-
     data_dictionary["surface_snow_thickness"][-1])
-    snow_height_first = data_dictionary["surface_snow_thickness"][0]
-    snow_height_last = data_dictionary["surface_snow_thickness"][-1]
-    # Rain
-    sum_precipitation = sum(data_dictionary['sum(precipitation_amount PT1H)'])
+    snow_height_last = data_dictionary["surface_snow_thickness"][0]
+    snow_height_first = data_dictionary["surface_snow_thickness"][-1]
     # Time
     first_timestamp = referenceTime_dict[max(referenceTime_dict.keys())]
     last_timestamp = referenceTime_dict[0]
@@ -222,7 +216,7 @@ def main(write = False, local = False):
     print('DATA SUMMARY')
     print('--------------------------')
     print(f'Nedbør som snø siste {num_iterations} timer: {snow} cm')
-    print(f'Nedbør som regn siste {num_iterations} timer: {sum_precipitation} mm')
+    print(f'Nedbør som regn siste {num_iterations} timer: {rain} mm')
     print(f'Gjennomsnittlig temperatur siste {num_iterations} timer: {avg_temp:.2f} C')
     print(f'Høyeste temperatur: {max_temp} C')
     print(f'Laveste temperatur: {min_temp} C')
@@ -257,7 +251,7 @@ def main(write = False, local = False):
         print(f'Num iterations: {num_iterations}') 
         # Making dictionary for notification from data
         data_dict = {
-        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.2f}', 'sum_precipitation': f'{sum_precipitation:.2f}',
+        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.2f}', 'rain': f'{rain:.2f}',
         'avg_temp': f'{avg_temp:.2f}', 'avg_wind_speed': f'{avg_wind_speed:.2f}', 
         'overall_max_wind_speed': f'{overall_max_wind_speed}', 'timestamp_omws': f'{timestamp_omws}',
         'last_timestamp': f'{last_timestamp}', 'first_timestamp': f'{first_timestamp}',
@@ -268,7 +262,7 @@ def main(write = False, local = False):
         #Auth with courier
         if not creds.daily_summary and not creds.twitter_notification:
             client = Courier(auth_token=creds.auth_token_courier)
-            list_id = 'testing'
+            list_id = 'fjellberg_daily'
             mailing_list = [{'list_id': list_id}]
             template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
             resp = client.send_message(
@@ -285,7 +279,7 @@ def main(write = False, local = False):
                             f"{first_timestamp}\n"
                             f"{last_timestamp}\n"
                             f"Snø: {snow:.1f} cm\n"
-                            f"Regn: {sum_precipitation:.1f} mm\n"
+                            f"Regn: {rain:.1f} mm\n"
                             f"Snitt.temp: {avg_temp:.1f} °C\n"
                             f"Max temp: {max_temp:.1f} °C\n"
                             f"Min temp: {min_temp:.1f} °C\n"
@@ -300,7 +294,7 @@ def main(write = False, local = False):
 
         else:
             client = Courier(auth_token=creds.auth_token_courier_24)
-            list_id = 'testing'
+            list_id = 'fjellberg_daily'
             mailing_list = [{'list_id': list_id}]
             template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
             resp = client.send_message(
