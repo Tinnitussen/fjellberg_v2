@@ -207,8 +207,8 @@ def main(write = False, local = False):
     # Snow
     overall_snow_delta = (data_dictionary["surface_snow_thickness"][0]-
     data_dictionary["surface_snow_thickness"][-1])
-    snow_height_first = data_dictionary["surface_snow_thickness"][0]
-    snow_height_last = data_dictionary["surface_snow_thickness"][-1]
+    snow_height_last = data_dictionary["surface_snow_thickness"][0]
+    snow_height_first = data_dictionary["surface_snow_thickness"][-1]
     # Time
     first_timestamp = referenceTime_dict[max(referenceTime_dict.keys())]
     last_timestamp = referenceTime_dict[0]
