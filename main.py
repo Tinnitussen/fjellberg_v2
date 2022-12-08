@@ -188,14 +188,7 @@ def main(write = False, local = False):
             print(f'Sterkeste vindkast: {max_wind_speed} m/s\n')
         else:
             print()
-        # Converting to precipitation to snow under certain conditions
-        if len(data_dictionary["surface_snow_thickness"])>1:
-            delta_snow_1h = (data_dictionary["surface_snow_thickness"][-1]-
-            data_dictionary["surface_snow_thickness"][-2])
-        else:
-            delta_snow_1h = 0
-
-        if temperature<1 and delta_snow_1h>=0:
+        if temperature<1:
             snow += precipitation
         else:
             rain += precipitation
