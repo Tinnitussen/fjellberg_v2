@@ -261,18 +261,50 @@ def main(write = False, local = False):
 
         #Auth with courier
         if not creds.daily_summary and not creds.twitter_notification:
-            client = Courier(auth_token=creds.auth_token_courier)
-            list_id = 'fjellberg_daily'
-            mailing_list = [{'list_id': list_id}]
-            template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
-            resp = client.send_message(
-                message = {
-                    'to': mailing_list,
-                    'data': data_dict,
-                    'template': template
-                }
-            )
-            print(resp["requestId"])
+            bypass = False
+            try:
+                with open('timestamp_notification.log', 'r') as file:
+                    file_str = file.read()
+                    notification_datetime = datetime.fromisoformat(file_str)
+            except FileNotFoundError:
+                print('Could not find file.')
+                bypass = True
+            except Exception as ex:
+                print(f'Something went wrong when reading file {file.name()}')
+                print(ex)
+            if datetime.now()-notification_datetime>=timedelta(hours=3) or bypass is True:
+                client = Courier(auth_token=creds.auth_token_courier)
+                list_id = 'testing'
+                mailing_list = [{'list_id': list_id}]
+                template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
+                resp = client.send_message(
+                    message = {
+                        'to': mailing_list,
+                        'data': data_dict,
+                        'template': template
+                    }
+                )
+                print(resp["requestId"])
+                with open('timestamp_notification.log', 'w') as file:
+                    current_time = datetime.now().isoformat()
+                    file.write(current_time)
+                
+                # Twitter notification about large amounts of snow
+                twitter_str = ("Varsel om mye snø på Gullingen\n"
+                            f"Sist brøytet: {latest_snow_removal}\n"
+                            f"Første måling {first_timestamp}\n"
+                            f"Siste måling: {last_timestamp}\n"
+                            f"Snø: {snow:.1f} cm\n"
+                            f"Regn: {rain:.1f} mm\n"
+                            f"Snitt.temp: {avg_temp:.1f} °C\n"
+                            f"Max temp: {max_temp:.1f} °C\n"
+                            f"Min temp: {min_temp:.1f} °C\n"
+                            f"Endring i snødybde: {overall_snow_delta:.1f} cm\n"
+                            f"Fra {snow_height_first} cm til {snow_height_last} cm")
+                # Set the tweepy client
+                api = tweepy.Client(None, creds.twitter_api_key, creds.twitter_api_key_secret,
+                creds.twitter_access_token, creds.twitter_access_token_secret)
+                api.create_tweet(text=twitter_str)
         
         elif creds.twitter_notification:
             twitter_str = ("Været på Gullingen siste 24t\n"
@@ -294,7 +326,7 @@ def main(write = False, local = False):
 
         else:
             client = Courier(auth_token=creds.auth_token_courier_24)
-            list_id = 'fjellberg_daily'
+            list_id = 'testing'
             mailing_list = [{'list_id': list_id}]
             template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
             resp = client.send_message(
@@ -311,6 +343,27 @@ def main(write = False, local = False):
     #"surface_snow_thickness"
     #"wind_speed"
     #"max(wind_speed PT1H)"
+
+    if notification_snow_removal is True:
+        bypass = False
+        try:
+            with open('timestamp_last_snow_removal.log', 'r') as file:
+                file_str = file.read()
+                notification_datetime = datetime.fromisoformat(file_str)
+        except FileNotFoundError:
+            print('Could not find file.')
+            bypass = True
+        except Exception as ex:
+            print(f'Something went wrong when reading file {file.name()}')
+            print(ex)
+        if datetime.now()-notification_datetime>=timedelta(hours=3) or bypass is True:
+            CET_TIME = datetime.now()+timedelta(hours=1)
+            twitter_str = (f"Brøytevarsel {CET_TIME}"
+            f"")
+            # Set the tweepy client
+            api = tweepy.Client(None, creds.twitter_api_key, creds.twitter_api_key_secret,
+            creds.twitter_access_token, creds.twitter_access_token_secret)
+            api.create_tweet(text=twitter_str)
 
 
 if __name__=="__main__":
