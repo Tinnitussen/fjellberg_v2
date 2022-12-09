@@ -111,7 +111,7 @@ def main(write = False, local = False):
         #Find the latest observations from frost API data.
         latest_observation = data_frost['data'][-1]['referenceTime'] # ISO format
         latest_observation = datetime.strptime(latest_observation, "%Y-%m-%dT%H:00:00.000Z")
-    
+        print(f'Last snow removal was at {latest_snow_removal}')
         # irute.no is in CET while frost API is in UTC
         # Time is adjusted by +1
 
