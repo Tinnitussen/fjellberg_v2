@@ -128,7 +128,7 @@ def main(write = False, local = False):
             hours=int((str(latest_observation-latest_snow_removal))[:1])
             num_iterations = hours+1
     else:
-        num_iterations = 24
+        num_iterations = 25
     # Data processing
     snow = 0
     rain = 0
@@ -258,12 +258,12 @@ def main(write = False, local = False):
         print(f'Num iterations: {num_iterations}') 
         # Making dictionary for notification from data
         data_dict = {
-        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.2f}', 'rain': f'{rain:.2f}',
-        'avg_temp': f'{avg_temp:.2f}', 'avg_wind_speed': f'{avg_wind_speed:.2f}', 
-        'overall_max_wind_speed': f'{overall_max_wind_speed}', 'timestamp_omws': f'{timestamp_omws}',
+        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.1f}', 'rain': f'{rain:.1f}',
+        'avg_temp': f'{avg_temp:.1f}', 'avg_wind_speed': f'{avg_wind_speed:.1f}', 
+        'overall_max_wind_speed': f'{overall_max_wind_speed:.1f}', 'timestamp_omws': f'{timestamp_omws}',
         'last_timestamp': f'{last_timestamp}', 'first_timestamp': f'{first_timestamp}',
-        'overall_snow_delta': f'{overall_snow_delta}', 'snow_height_first': f'{snow_height_first}',
-        'snow_height_last': f'{snow_height_last}', 'max_temp': f'{max_temp}', 'min_temp': f'{min_temp}'
+        'overall_snow_delta': f'{overall_snow_delta:.1f}', 'snow_height_first': f'{snow_height_first}',
+        'snow_height_last': f'{snow_height_last}', 'max_temp': f'{max_temp:.1f}', 'min_temp': f'{min_temp:.1f}'
         }
 
         #Auth with courier
@@ -292,7 +292,7 @@ def main(write = False, local = False):
                             f"Min temp: {min_temp:.1f} °C\n"
                             f"Vind: {avg_wind_speed:.1f} m/s\n"
                             f"Sterkeste vindkast: {overall_max_wind_speed:.1f} m/s\n"
-                            f"Endring i snødybde: {overall_snow_delta} cm\n"
+                            f"Endring i snødybde: {overall_snow_delta:.1f} cm\n"
                             f"Fra {snow_height_first} cm til {snow_height_last} cm")
             # Set the tweepy client
             api = tweepy.Client(None, creds.twitter_api_key, creds.twitter_api_key_secret,
