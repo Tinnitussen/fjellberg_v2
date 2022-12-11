@@ -79,7 +79,7 @@ def main(write = False, local = False):
             'elements': elements_frost,
             'timeresolutions': 'PT1H',
             'maxage': 'P1D',
-            'limit': '24'
+            'limit': '25'
         }
         data_frost = api_call(endpoint_frost, parameters_frost, creds.client_id_frost, creds.client_secret_frost)
 
