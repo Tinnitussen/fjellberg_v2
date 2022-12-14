@@ -38,6 +38,6 @@ jobs:
           CLIENT_ID_FROST: ${{secrets.CLIENT_ID_FROST}}
           CLIENT_SECRET_FROST: ${{secrets.CLIENT_SECRET_FROST}}
           AUTH_TOKEN_COURIER_24: ${{secrets.AUTH_TOKEN_COURIER_24}}
-          ENPOINT_RUTE: ${{secrets.ENDPOINT_RUTE}}
+          ENDPOINT_RUTE: ${{secrets.ENDPOINT_RUTE}}
           DAILY_SUMMARY: True
         run: python main.py
