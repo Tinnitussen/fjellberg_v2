@@ -121,11 +121,11 @@ def main(write = False, local = False):
             print('Snow was removed very recently OR there is a problem with the data. \nExiting program...')
             quit()
         # 2. Snow removal >=24 hours
-        elif latest_observation-latest_snow_removal>=timedelta(hours=23):
-            num_iterations = 24
+        elif latest_observation-latest_snow_removal>=timedelta(hours=24):
+            num_iterations = 25
         # 3. Snow removal between 0 and 24 hours
         else:
-            hours=int((str(latest_observation-latest_snow_removal))[:1])
+            hours=int((str(latest_observation-latest_snow_removal))[:2])
             num_iterations = hours+1
     else:
         num_iterations = 25
@@ -215,14 +215,14 @@ def main(write = False, local = False):
 
     print('DATA SUMMARY')
     print('--------------------------')
-    print(f'Nedbør som snø siste {num_iterations} timer: {snow} cm')
-    print(f'Nedbør som regn siste {num_iterations} timer: {rain} mm')
-    print(f'Gjennomsnittlig temperatur siste {num_iterations} timer: {avg_temp:.2f} C')
+    print(f'Nedbør som snø siste {num_iterations-1} timer: {snow} cm')
+    print(f'Nedbør som regn siste {num_iterations-1} timer: {rain} mm')
+    print(f'Gjennomsnittlig temperatur siste {num_iterations-1} timer: {avg_temp:.2f} C')
     print(f'Høyeste temperatur: {max_temp} C')
     print(f'Laveste temperatur: {min_temp} C')
-    print(f'Gjennomsnittlig vindstyrke siste {num_iterations} timer: {avg_wind_speed:.2f} m/s')
+    print(f'Gjennomsnittlig vindstyrke siste {num_iterations-1} timer: {avg_wind_speed:.2f} m/s')
     print(f'Høyeste vindstyrke: {overall_max_wind_speed} m/s. Måling: {timestamp_omws}')
-    print(f'Snøhøyde delta: {overall_snow_delta} cm. '
+    print(f'Snøhøyde delta: {overall_snow_delta:.1f} cm. '
     f'Fra {snow_height_first} cm til {snow_height_last} cm')
     print(f'Siste måling: {last_timestamp}')
     print(f'Første måling: {first_timestamp}')
@@ -250,8 +250,9 @@ def main(write = False, local = False):
         print(f'Snow: {snow}')
         print(f'Num iterations: {num_iterations}') 
         # Making dictionary for notification from data
+        hours = num_iterations-1
         data_dict = {
-        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.1f}', 'rain': f'{rain:.1f}',
+        'num_iterations': f'{hours}', 'snow': f'{snow:.1f}', 'rain': f'{rain:.1f}',
         'avg_temp': f'{avg_temp:.1f}', 'avg_wind_speed': f'{avg_wind_speed:.1f}', 
         'overall_max_wind_speed': f'{overall_max_wind_speed:.1f}', 'timestamp_omws': f'{timestamp_omws}',
         'last_timestamp': f'{last_timestamp}', 'first_timestamp': f'{first_timestamp}',
