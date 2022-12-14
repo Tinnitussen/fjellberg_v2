@@ -125,7 +125,9 @@ def main(write = False, local = False):
             num_iterations = 25
         # 3. Snow removal between 0 and 24 hours
         else:
-            hours=int((str(latest_observation-latest_snow_removal))[:2])
+            timedifferential = str(latest_observation-latest_snow_removal)[:2]
+            timedifferential = timedifferential.replace(':','')
+            hours = int(timedifferential)
             num_iterations = hours+1
     else:
         num_iterations = 25
