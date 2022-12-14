@@ -63,8 +63,7 @@ def main(write = False, local = False):
     if local is False:
         if not creds.daily_summary:
             # API call irute.no
-            bearer_token = 'Bearer '+creds.client_secret_rute
-            headers = {'authorization': bearer_token}
+            headers = {'authorization': creds.client_secret_rute}
             data_rute = requests.get(creds.endpoint_rute, headers=headers).json()
 
         # API call frost API
