@@ -63,7 +63,7 @@ def main(write = False, local = False):
     if local is False:
         if not creds.daily_summary:
             # API call irute.no
-            endpoint_rute = creds.endpoint_rute
+            endpoint_rute = 'https://kart.irute.net/fjellbergsskardet_busses.json?_=1651561338966'
             data_rute = api_call(endpoint_rute, id=creds.client_id_rute, secret=creds.client_secret_rute)
 
         # API call frost API
