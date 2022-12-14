@@ -64,8 +64,7 @@ def main(write = False, local = False):
         if not creds.daily_summary:
             # API call irute.no
             headers = {'authorization': creds.client_secret_rute}
-            url = 'https://plowman.xn--snbryting-m8ac.net/api/units.json'
-            data_rute = requests.get(url, headers=headers).json()
+            data_rute = requests.get(creds.endpoint_rute, headers=headers).json()
 
         # API call frost API
         endpoint_frost = 'https://frost.met.no/observations/v0.jsonld'
