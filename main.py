@@ -63,8 +63,8 @@ def main(write = False, local = False):
     if local is False:
         if not creds.daily_summary:
             # API call irute.no
-            headers = {'authorization': creds.client_secret_rute}
-            data_rute = requests.get(creds.endpoint_rute, headers=headers).json()
+            endpoint_rute = creds.endpoint_rute
+            data_rute = api_call(endpoint_rute, id=creds.client_id_rute, secret=creds.client_secret_rute)
 
         # API call frost API
         endpoint_frost = 'https://frost.met.no/observations/v0.jsonld'
@@ -99,18 +99,21 @@ def main(write = False, local = False):
     
     if not creds.daily_summary:
         # Data processing irute.no. Finding most recent snow removal.
+        data_rute = data_rute['features']
         latest_snow_removal = None
-        for snow_truck in data_rute:
-            date = snow_truck["lastPositionDate"]
-            date_object = datetime.fromisoformat(date)
+        for element in data_rute:
+            date = element['properties']['Date']
+            date_object = datetime.strptime(date, '%H:%M:%S %d.%m.%Y')
             if latest_snow_removal is None:
                 latest_snow_removal = date_object
             if date_object>latest_snow_removal:
                 latest_snow_removal= date_object
         #Find the latest observations from frost API data.
         latest_observation = data_frost['data'][-1]['referenceTime'] # ISO format
-        latest_observation = datetime.fromisoformat(latest_observation)
+        latest_observation = datetime.strptime(latest_observation, "%Y-%m-%dT%H:00:00.000Z")
         print(f'Last snow removal was at {latest_snow_removal}')
+        # irute.no is in CET while frost API is in UTC
+        # Time is adjusted by +1
 
         # 1. Snow removal more recent than latest data from Frost API
         if latest_observation-latest_snow_removal<=timedelta(hours=0):
@@ -118,11 +121,11 @@ def main(write = False, local = False):
             print('Snow was removed very recently OR there is a problem with the data. \nExiting program...')
             quit()
         # 2. Snow removal >=24 hours
-        elif latest_observation-latest_snow_removal>=timedelta(hours=24):
-            num_iterations = 25
+        elif latest_observation-latest_snow_removal>=timedelta(hours=23):
+            num_iterations = 24
         # 3. Snow removal between 0 and 24 hours
         else:
-            hours=latest_observation-latest_snow_removal
+            hours=int((str(latest_observation-latest_snow_removal))[:1])
             num_iterations = hours+1
     else:
         num_iterations = 25
@@ -212,12 +215,12 @@ def main(write = False, local = False):
 
     print('DATA SUMMARY')
     print('--------------------------')
-    print(f'Nedbør som snø siste {num_iterations-1} timer: {snow} cm')
-    print(f'Nedbør som regn siste {num_iterations-1} timer: {rain} mm')
-    print(f'Gjennomsnittlig temperatur siste {num_iterations-1} timer: {avg_temp:.2f} C')
+    print(f'Nedbør som snø siste {num_iterations} timer: {snow} cm')
+    print(f'Nedbør som regn siste {num_iterations} timer: {rain} mm')
+    print(f'Gjennomsnittlig temperatur siste {num_iterations} timer: {avg_temp:.2f} C')
     print(f'Høyeste temperatur: {max_temp} C')
     print(f'Laveste temperatur: {min_temp} C')
-    print(f'Gjennomsnittlig vindstyrke siste {num_iterations-1} timer: {avg_wind_speed:.2f} m/s')
+    print(f'Gjennomsnittlig vindstyrke siste {num_iterations} timer: {avg_wind_speed:.2f} m/s')
     print(f'Høyeste vindstyrke: {overall_max_wind_speed} m/s. Måling: {timestamp_omws}')
     print(f'Snøhøyde delta: {overall_snow_delta} cm. '
     f'Fra {snow_height_first} cm til {snow_height_last} cm')
@@ -247,9 +250,8 @@ def main(write = False, local = False):
         print(f'Snow: {snow}')
         print(f'Num iterations: {num_iterations}') 
         # Making dictionary for notification from data
-        hours = num_iterations-1
         data_dict = {
-        'num_iterations': f'{hours}', 'snow': f'{snow:.1f}', 'rain': f'{rain:.1f}',
+        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.1f}', 'rain': f'{rain:.1f}',
         'avg_temp': f'{avg_temp:.1f}', 'avg_wind_speed': f'{avg_wind_speed:.1f}', 
         'overall_max_wind_speed': f'{overall_max_wind_speed:.1f}', 'timestamp_omws': f'{timestamp_omws}',
         'last_timestamp': f'{last_timestamp}', 'first_timestamp': f'{first_timestamp}',
