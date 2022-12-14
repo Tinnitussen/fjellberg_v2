@@ -97,7 +97,7 @@ def main(write = False, local = False):
         data_frost = read_file(filnavn_frost)
         data_rute = read_file(filnavn_rute)
     
-    if not creds.daily_summary:
+    if not creds.daily_summary and not creds.twitter_notification:
         # Data processing irute.no. Finding most recent snow removal.
         data_rute = data_rute['features']
         latest_snow_removal = None
