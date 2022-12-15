@@ -5,6 +5,7 @@ if os.path.exists('creds_local.py'):
 # irute.no
 client_id_rute = os.environ.get('CLIENT_ID_RUTE')
 client_secret_rute = os.environ.get('CLIENT_SECRET_RUTE')
+endpoint_rute = os.environ.get('ENDPOINT_RUTE')
 # frost API
 client_id_frost = os.environ.get('CLIENT_ID_FROST')
 client_secret_frost = os.environ.get('CLIENT_SECRET_FROST')

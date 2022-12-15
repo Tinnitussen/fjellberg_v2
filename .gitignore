@@ -12,6 +12,8 @@ data_rute.json
 .vscode/
 creds_local.py
 notes.txt
+test.py
+todo.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

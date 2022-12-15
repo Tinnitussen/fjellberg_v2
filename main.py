@@ -63,8 +63,7 @@ def main(write = False, local = False):
     if local is False:
         if not creds.daily_summary:
             # API call irute.no
-            endpoint_rute = 'https://kart.irute.net/fjellbergsskardet_busses.json?_=1651561338966'
-            data_rute = api_call(endpoint_rute, id=creds.client_id_rute, secret=creds.client_secret_rute)
+            data_rute = api_call(creds.endpoint_rute, id=creds.client_id_rute, secret=creds.client_secret_rute)
 
         # API call frost API
         endpoint_frost = 'https://frost.met.no/observations/v0.jsonld'
@@ -79,7 +78,7 @@ def main(write = False, local = False):
             'elements': elements_frost,
             'timeresolutions': 'PT1H',
             'maxage': 'P1D',
-            'limit': '24'
+            'limit': '25'
         }
         data_frost = api_call(endpoint_frost, parameters_frost, creds.client_id_frost, creds.client_secret_frost)
 
@@ -97,7 +96,7 @@ def main(write = False, local = False):
         data_frost = read_file(filnavn_frost)
         data_rute = read_file(filnavn_rute)
     
-    if not creds.daily_summary:
+    if not creds.daily_summary and not creds.twitter_notification:
         # Data processing irute.no. Finding most recent snow removal.
         data_rute = data_rute['features']
         latest_snow_removal = None
@@ -121,11 +120,13 @@ def main(write = False, local = False):
             print('Snow was removed very recently OR there is a problem with the data. \nExiting program...')
             quit()
         # 2. Snow removal >=24 hours
-        elif latest_observation-latest_snow_removal>=timedelta(hours=23):
-            num_iterations = 24
+        elif latest_observation-latest_snow_removal>=timedelta(hours=24):
+            num_iterations = 25
         # 3. Snow removal between 0 and 24 hours
         else:
-            hours=int((str(latest_observation-latest_snow_removal))[:1])
+            timedifferential = str(latest_observation-latest_snow_removal)[:2]
+            timedifferential = timedifferential.replace(':','')
+            hours = int(timedifferential)
             num_iterations = hours+1
     else:
         num_iterations = 25
@@ -215,14 +216,14 @@ def main(write = False, local = False):
 
     print('DATA SUMMARY')
     print('--------------------------')
-    print(f'Nedbør som snø siste {num_iterations} timer: {snow} cm')
-    print(f'Nedbør som regn siste {num_iterations} timer: {rain} mm')
-    print(f'Gjennomsnittlig temperatur siste {num_iterations} timer: {avg_temp:.2f} C')
+    print(f'Nedbør som snø siste {num_iterations-1} timer: {snow} cm')
+    print(f'Nedbør som regn siste {num_iterations-1} timer: {rain} mm')
+    print(f'Gjennomsnittlig temperatur siste {num_iterations-1} timer: {avg_temp:.2f} C')
     print(f'Høyeste temperatur: {max_temp} C')
     print(f'Laveste temperatur: {min_temp} C')
-    print(f'Gjennomsnittlig vindstyrke siste {num_iterations} timer: {avg_wind_speed:.2f} m/s')
+    print(f'Gjennomsnittlig vindstyrke siste {num_iterations-1} timer: {avg_wind_speed:.2f} m/s')
     print(f'Høyeste vindstyrke: {overall_max_wind_speed} m/s. Måling: {timestamp_omws}')
-    print(f'Snøhøyde delta: {overall_snow_delta} cm. '
+    print(f'Snøhøyde delta: {overall_snow_delta:.1f} cm. '
     f'Fra {snow_height_first} cm til {snow_height_last} cm')
     print(f'Siste måling: {last_timestamp}')
     print(f'Første måling: {first_timestamp}')
@@ -250,8 +251,9 @@ def main(write = False, local = False):
         print(f'Snow: {snow}')
         print(f'Num iterations: {num_iterations}') 
         # Making dictionary for notification from data
+        hours = num_iterations-1
         data_dict = {
-        'num_iterations': f'{num_iterations}', 'snow': f'{snow:.1f}', 'rain': f'{rain:.1f}',
+        'num_iterations': f'{hours}', 'snow': f'{snow:.1f}', 'rain': f'{rain:.1f}',
         'avg_temp': f'{avg_temp:.1f}', 'avg_wind_speed': f'{avg_wind_speed:.1f}', 
         'overall_max_wind_speed': f'{overall_max_wind_speed:.1f}', 'timestamp_omws': f'{timestamp_omws}',
         'last_timestamp': f'{last_timestamp}', 'first_timestamp': f'{first_timestamp}',
