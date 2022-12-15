@@ -11,6 +11,7 @@ data_frost.json
 data_rute.json
 .vscode/
 creds_local.py
+creds_local_testing.py
 notes.txt
 test.py
 todo.txt
