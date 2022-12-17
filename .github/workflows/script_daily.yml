@@ -33,11 +33,8 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run script
         env:
-          CLIENT_ID_RUTE: ${{secrets.CLIENT_ID_RUTE}}
-          CLIENT_SECRET_RUTE: ${{secrets.CLIENT_SECRET_RUTE}}
           CLIENT_ID_FROST: ${{secrets.CLIENT_ID_FROST}}
-          CLIENT_SECRET_FROST: ${{secrets.CLIENT_SECRET_FROST}}
-          AUTH_TOKEN_COURIER_24: ${{secrets.AUTH_TOKEN_COURIER_24}}
-          ENDPOINT_RUTE: ${{secrets.ENDPOINT_RUTE}}
-          DAILY_SUMMARY: True
-        run: python main.py
+          AUTH_TOKEN_COURIER: ${{secrets.AUTH_TOKEN_COURIER}}
+        run: |
+        timedatectl
+        python daily_email.py

@@ -32,6 +32,8 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run script
         env:
-          AUTH_TOKEN_COURIER: ${{secrets.AUTH_TOKEN_COURIER_24}}
+          AUTH_TOKEN_COURIER: ${{secrets.AUTH_TOKEN_COURIER}}
           SHEET_ID: ${{secrets.SHEET_ID}}
-        run: python update.py
+        run: |
+        timedatectl
+        python update.py

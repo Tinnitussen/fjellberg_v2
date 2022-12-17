@@ -13,7 +13,9 @@ subscribers_ids = [user['recipientId'] for user in subscriptions_resp['items']]
 print(f'Current subscribers to {list_id}: {subscribers_ids}')
 
 # Get CSV from sheet and convert to text
-mailing_list = requests.get(f'https://docs.google.com/spreadsheet/ccc?key={creds.sheet_id}&output=csv')
+mailing_list = requests.get(
+    f'https://docs.google.com/spreadsheet/ccc?key={creds.sheet_id}&output=csv'
+    )
 mailing_list = mailing_list.text
 # Seperate based on line so each user has its' own list of information
 mailing_list = mailing_list.split('\r\n')

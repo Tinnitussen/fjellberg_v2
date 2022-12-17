@@ -1,5 +1,5 @@
 import os
-if os.path.exists('creds_local.py'):
+if os.path.exists('creds_local_testing.py'):
     import creds_local_testing
     creds_local_testing.set_environment()
 # irute.no
