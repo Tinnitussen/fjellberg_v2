@@ -35,5 +35,5 @@ jobs:
           AUTH_TOKEN_COURIER: ${{secrets.AUTH_TOKEN_COURIER}}
           SHEET_ID: ${{secrets.SHEET_ID}}
         run: |
-        timedatectl
-        python update.py
+          timedatectl
+          python update.py
