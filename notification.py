@@ -103,7 +103,7 @@ def main():
         num_iterations = hours+1
 
     data_dict = process_frostapi(data_frost, num_iterations)
-    snow = float(data_dict['snow'])
+    snow = data_dict['snow']
     # Conditions for notification
     notification = False
     if num_iterations < 6 and snow-num_iterations > 4:

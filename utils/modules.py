@@ -4,9 +4,10 @@ import json
 from datetime import datetime
 import pytz
 from trycourier import Courier
+import tweepy
 
 
-def api_call(**kwargs) -> requests.Response:
+def api_call(name='Not specified', **kwargs) -> requests.Response:
     """Make HTTP requests with requests library"""
     connection_tries = 0
     while True:
@@ -23,6 +24,7 @@ def api_call(**kwargs) -> requests.Response:
             continue
         except Exception as err:
             raise SystemExit(err)
+        print(f'Data successfully retrieved from {name}')
         return r
 
 
@@ -46,10 +48,34 @@ def local_to_utc(date):
 
 
 def utc_to_local(datetime_utc):
-    """Convert from UTC to Oslo local time timeformat"""
+    """Convert from UTC to Oslo local time timeformat as userfriendly str"""
     local_timezone = pytz.timezone('Europe/Oslo')
     local = datetime_utc.astimezone(local_timezone)
-    return local
+    local_str = local.strftime("%d.%m.%Y %H:%M")
+
+    return local_str
+
+
+def process_rute(data_rute) -> dict:
+    data_rute = data_rute['features']
+    latest_snow_removal = None
+    for element in data_rute:
+        date = element['properties']['Date']
+        date_dt = local_to_utc(date)
+        name = element['properties']['NAME']
+        status = element['properties']['STATUS']
+        if status == 'online':
+            print('Snow removal is in progress.')
+            print('Exiting...')
+            raise SystemExit(0)
+        print(f'{name} last active {date_dt}. Current status {status}')
+        if latest_snow_removal is None:
+            latest_snow_removal = date_dt
+        if date_dt > latest_snow_removal:
+            latest_snow_removal = date_dt
+
+    print(f'Last snow removal was at {latest_snow_removal}')
+    return latest_snow_removal
 
 
 def process_frostapi(data_frost, num_iterations) -> dict:
@@ -97,13 +123,9 @@ def process_frostapi(data_frost, num_iterations) -> dict:
                 missing_data = True
                 missing_data_dict[element].append(timestamp)
                 print(f'{element} MISSING!')
-                if element in ["air_temperature",
-                               "sum(precipitation_amount PT1H)",
-                               "surface_snow_thickness"]:
-                    print('(!!!)skip(!!!)')
-                    skip = True
+                skip = True
         if skip is True:
-            print()
+            print('(!!!)skip(!!!)\n')
             continue
 
         # Samle en informasjon fra en måling
@@ -207,9 +229,9 @@ def process_frostapi(data_frost, num_iterations) -> dict:
             'avg_temp': f'{avg_temp:.2f}',
             'avg_wind_speed': f'{avg_wind_speed:.2f}',
             'overall_max_wind_speed': f'{overall_max_wind_speed:.1f}',
-            'timestamp_omws': f'{timestamp_omws_cet}'[:-6],
-            'last_timestamp': f'{last_timestamp_cet}'[:-6],
-            'first_timestamp': f'{first_timestamp_cet}'[:-6],
+            'timestamp_omws': f'{timestamp_omws_cet}',
+            'last_timestamp': f'{last_timestamp_cet}',
+            'first_timestamp': f'{first_timestamp_cet}',
             'overall_snow_delta': f'{overall_snow_delta:.1f}',
             'snow_height_first': f'{snow_height_first}',
             'snow_height_last': f'{snow_height_last}',
@@ -228,3 +250,12 @@ def courier_message(auth_token, list_id, template, data_dict):
         }
     resp = client.send_message(message=message)
     print(resp["requestId"])
+
+
+def twitter_post(access_token, access_token_secret,
+                 api_key, api_key_secret, post_str):
+    api = tweepy.Client(
+        None, api_key, api_key_secret,
+        access_token, access_token_secret
+        )
+    api.create_tweet(text=post_str)
