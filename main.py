@@ -167,11 +167,9 @@ def main(write = False, local = False):
                 missing_data = True
                 missing_data_dict[element].append(timestamp)
                 print(f'{element} MISSING!')
-                if element in ["air_temperature", "sum(precipitation_amount PT1H)","surface_snow_thickness"]:
-                    print('(!!!)skip(!!!)')
-                    skip = True
+                skip = True
         if skip is True:
-            print()
+            print('(!!!)skip(!!!)\n')
             continue
 
         # Samle en informasjon fra en måling
