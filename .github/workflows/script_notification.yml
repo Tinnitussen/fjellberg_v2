@@ -21,6 +21,11 @@ jobs:
     timeout-minutes: 15
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Download timestamp_log artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: timestamp_log
+          path: timestamp_notification.log
       - uses: actions/checkout@v3
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
