@@ -1,0 +1,17 @@
+name: Artifact initializer
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Create timestamp_notification.log
+        run: touch timestamp_notification.log
+      - name: 'Initialize artifacts'
+        uses: actions/upload-artifact@v3
+        with:
+          name: timestamp_log
+          path: timestamp_notification.log
+          retention-days: 2
