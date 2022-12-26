@@ -111,10 +111,10 @@ def main(write=False, read=False):
         print(f'Snow: {snow}')
         print(f'Num iterations: {num_iterations}')
         # Send notification message with courier
-        list_id = 'testing'
+        list_id = 'fjellberg_daily'
         template = "DVXWVCXH4DMAMAM0HRVTP1MVAGEZ"
         courier_message(creds.auth_token_courier, list_id, template, data_dict)
 
 
 if __name__ == "__main__":
-    main(read=True)
+    main()
