@@ -38,6 +38,7 @@ jobs:
         run: |
           timedatectl
           python notification.py
+          touch timestamp_notification.log
       - name: Upload timestamp_log artifact
         uses: actions/upload-artifact@v3
         with:
