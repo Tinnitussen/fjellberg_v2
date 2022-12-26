@@ -2,14 +2,16 @@ from datetime import datetime, timedelta
 import pytz
 import creds
 from utils.modules import (
-    local_to_utc,
     api_call,
     process_frostapi,
-    courier_message
+    process_rute,
+    courier_message,
+    write_file,
+    read_file
 )
 
 
-def main():
+def main(write=False, read=False):
     # Checking to see if notification was sent <= 3 hours ago
     notif_timediff = None
     try:
@@ -28,31 +30,6 @@ def main():
             print('Exiting...')
             raise SystemExit(0)
 
-    # Rute API call
-    # --------------------------------------------------
-    rute_call_dict = {'url': creds.endpoint_rute}
-    data_rute = api_call(**rute_call_dict).json()
-    data_rute = data_rute['features']
-    latest_snow_removal = None
-    for element in data_rute:
-        date = element['properties']['Date']
-        date_dt = local_to_utc(date)
-        name = element['properties']['NAME']
-        status = element['properties']['STATUS']
-        if status == 'ONLINE':
-            print('Snow removal is in progress.')
-            print('Exiting...')
-            quit()
-        print(f'{name} last active {date_dt}. Current status {status}')
-        if latest_snow_removal is None:
-            latest_snow_removal = date_dt
-        if date_dt > latest_snow_removal:
-            latest_snow_removal = date_dt
-
-    print(f'Last snow removal was at {latest_snow_removal}')
-
-    # Frost API
-    # ------------------------------------------------------------
     endpoint_frost = 'https://frost.met.no/observations/v0.jsonld'
     elements_frost = (
         'sum(precipitation_amount PT1H),'
@@ -74,10 +51,23 @@ def main():
         'auth': (creds.client_id_frost, '')
         }
 
-    data_frost = api_call(**frost_call_dict).json()
+    rute_call_dict = {'url': creds.endpoint_rute}
+
+    if read is False:
+        data_frost = api_call('Frost API', **frost_call_dict).json()
+        data_rute = api_call('Rute', **rute_call_dict).json()
+    else:
+        data_frost = read_file('data_frost.json')
+        data_rute = read_file('data_rute.json')
+
+    if write is True:
+        write_file('data_frost.json', data_frost)
+        write_file('data_rute.json', data_rute)
+
+    latest_snow_removal = process_rute(data_rute)
+
     latest_observation = data_frost['data'][-1]['referenceTime']
     latest_observation = datetime.fromisoformat(latest_observation)
-    print(latest_observation)
 
     if latest_observation-latest_snow_removal <= timedelta(hours=0):
         num_iterations = 0
@@ -102,8 +92,10 @@ def main():
         print(hours)
         num_iterations = hours+1
 
-    data_dict = process_frostapi(data_frost, num_iterations)
-    snow = data_dict['snow']
+    data_dict = process_frostapi(
+        data_frost, latest_snow_removal, num_iterations
+        )
+    snow = float(data_dict['snow'])
     # Conditions for notification
     notification = False
     if num_iterations < 6 and snow-num_iterations > 4:
@@ -125,4 +117,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(read=True)

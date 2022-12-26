@@ -78,7 +78,7 @@ def process_rute(data_rute) -> dict:
     return latest_snow_removal
 
 
-def process_frostapi(data_frost, num_iterations) -> dict:
+def process_frostapi(data_frost, latest_snow_removal, num_iterations) -> dict:
     """Process data from Frost API"""
     snow = 0
     rain = 0
@@ -216,11 +216,17 @@ def process_frostapi(data_frost, num_iterations) -> dict:
 
     hours = num_iterations-1
     # Making data local time for the email notification
-    timestamps = [last_timestamp, timestamp_omws, first_timestamp]
+    timestamps = [
+        last_timestamp,
+        timestamp_omws,
+        first_timestamp,
+        latest_snow_removal
+        ]
     timestamps_cet = [utc_to_local(timestamp) for timestamp in timestamps]
     last_timestamp_cet = timestamps_cet[0]
     timestamp_omws_cet = timestamps_cet[1]
     first_timestamp_cet = timestamps_cet[2]
+    latest_snow_removal_cet = timestamps_cet[3]
 
     data_dict = {
             'num_iterations': f'{hours}',
@@ -236,7 +242,8 @@ def process_frostapi(data_frost, num_iterations) -> dict:
             'snow_height_first': f'{snow_height_first}',
             'snow_height_last': f'{snow_height_last}',
             'max_temp': f'{max_temp:.1f}',
-            'min_temp': f'{min_temp:.1f}'
+            'min_temp': f'{min_temp:.1f}',
+            'latest_snow_removal': f'{latest_snow_removal_cet}'
         }
     return data_dict
 

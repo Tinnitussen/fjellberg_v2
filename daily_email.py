@@ -1,12 +1,11 @@
 import creds
-from datetime import datetime
+from datetime import datetime, timedelta
 from utils.modules import (
     api_call,
     process_frostapi,
     courier_message,
     read_file,
     write_file,
-    local_to_utc,
     process_rute
 )
 
@@ -36,19 +35,37 @@ def main(write=False, read=False):
     rute_call_dict = {'url': creds.endpoint_rute}
 
     if read is False:
-        data_rute = api_call(**rute_call_dict).json()
-        data_frost = api_call(**frost_call_dict).json()
+        data_frost = api_call('Frost API', **frost_call_dict).json()
+        data_rute = api_call('Rute', **rute_call_dict).json()
     else:
-        data_rute = read_file('data_rute.json')
         data_frost = read_file('data_frost.json')
+        data_rute = read_file('data_rute.json')
+
+    if write is True:
+        write_file('data_frost.json', data_frost)
+        write_file('data_rute', data_rute)
+
+    latest_snow_removal = process_rute(data_rute)
+    data_dict = process_frostapi(data_frost, latest_snow_removal, 25)
 
     latest_observation = data_frost['data'][-1]['referenceTime']
     latest_observation = datetime.fromisoformat(latest_observation)
-    print(latest_observation)
 
-    latest_snow_removal = process_rute(data_rute)
-    data_dict = process_frostapi(data_frost, 25)
-    data_rute['latest_snow_removal'] = latest_snow_removal
+    timedifferential = latest_observation-latest_snow_removal
+    if (timedifferential >= timedelta(hours=0) and
+       timedifferential <= timedelta(hours=24)):
+        total_seconds = timedifferential.total_seconds()
+        hours = int(total_seconds/3600)
+        print(hours)
+        num_iterations = hours+1
+        snow_check_dict = process_frostapi(
+            data_frost, latest_snow_removal, num_iterations
+            )
+        snow_since_removed = snow_check_dict['snow']
+        data_dict['snow_since_removed'] = (
+            f'Snø siden sist brøytet {snow_since_removed} cm'
+        )
+
     # Send notification message with courier
     list_id = 'testing'
     template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
