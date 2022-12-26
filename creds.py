@@ -1,7 +1,7 @@
 import os
-if os.path.exists('creds_local_testing.py'):
-    import creds_local_testing
-    creds_local_testing.set_environment()
+if os.path.exists('creds_local.py'):
+    import creds_local
+    creds_local.set_environment()
 # irute.no
 endpoint_rute = os.environ.get('ENDPOINT_RUTE')
 # frost API
