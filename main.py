@@ -187,7 +187,7 @@ def main(write = False, local = False):
             print(f'Sterkeste vindkast: {max_wind_speed} m/s\n')
         else:
             print()
-        if temperature<1:
+        if temperature<0.3:
             snow += precipitation
         else:
             rain += precipitation
