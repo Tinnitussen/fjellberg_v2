@@ -1,4 +1,4 @@
-name: Summary 24
+name: Daglig email
 on:
   #Run every day at 05:05 UTC (06:05 CET)
   schedule:
