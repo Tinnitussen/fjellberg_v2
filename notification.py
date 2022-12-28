@@ -24,6 +24,7 @@ def main(write=False, read=False):
         notification_iso = notification_iso.replace(' ', '+')
         notif_timediff = None
         last_notification = datetime.fromisoformat(notification_iso)
+        print(f'Last notification: {last_notification}')
         current_time = datetime.now(pytz.utc)
         notif_timediff = current_time - last_notification
     except Exception as err:
