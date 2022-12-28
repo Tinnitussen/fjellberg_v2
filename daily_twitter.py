@@ -54,7 +54,6 @@ def main(write=False, read=False):
         "Gullingen siste 12t\n"
         f"{data_dict['first_timestamp']}\n"
         f"{data_dict['last_timestamp']}\n"
-        f"Sist brøytet {data_dict['latest_snow_removal']}\n"
         f"Snø {data_dict['snow']} cm\n"
         f"Regn {data_dict['rain']} mm\n"
         f"Snitt.temp {data_dict['avg_temp']} °C\n"
@@ -64,7 +63,8 @@ def main(write=False, read=False):
         f"Max vind {data_dict['overall_max_wind_speed']} m/s"
         "\nEndring snødybde "
         f"{data_dict['snow_height_first']} "
-        f"til {data_dict['snow_height_last']} cm"
+        f"til {data_dict['snow_height_last']} cm\n"
+        f"Sist brøytet {data_dict['latest_snow_removal']}"
         )
 
     timedifferential = latest_observation-latest_snow_removal
