@@ -21,6 +21,7 @@ def main(write=False, read=False):
     try:
         notification_iso = requests.get(endpoint_read)
         notification_iso = notification_iso.json()['feeds'][-1]['field1']
+        notification_iso = notification_iso.replace(' ', '+')
         notif_timediff = None
         last_notification = datetime.fromisoformat(notification_iso)
         current_time = datetime.now(pytz.utc)
