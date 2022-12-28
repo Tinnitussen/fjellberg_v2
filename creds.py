@@ -15,3 +15,6 @@ twitter_api_key = os.environ.get('TWITTER_API_KEY')
 twitter_api_key_secret = os.environ.get('TWITTER_API_KEY_SECRET')
 twitter_access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
 twitter_access_token_secret = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
+# Thingspeak
+things_read_key = os.environ.get('THINGS_READ_KEY')
+things_write_key = os.environ.get('THINGS_WRITE_KEY')

@@ -35,6 +35,9 @@ jobs:
           CLIENT_ID_FROST: ${{secrets.CLIENT_ID_FROST}}
           AUTH_TOKEN_COURIER: ${{secrets.AUTH_TOKEN_COURIER}}
           ENDPOINT_RUTE: ${{secrets.ENDPOINT_RUTE}}
+          THINGS_WRITE_KEY: ${{secrets.THINGS_WRITE_KEY}}
+          THINGS_READ_KEY: ${{secrets.THINGS_READ_KEY}}
+
         run: |
           timedatectl
           python notification.py
