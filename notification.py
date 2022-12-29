@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import pytz
 import creds
+import requests
 from utils.modules import (
     api_call,
     process_frostapi,
@@ -13,17 +14,22 @@ from utils.modules import (
 
 def main(write=False, read=False):
     # Checking to see if notification was sent <= 3 hours ago
-    notif_timediff = None
+    endpoint_read = (
+        'https://api.thingspeak.com/channels/1994784/'
+        f'feeds.json?api_key={creds.things_read_key}&results=2'
+    )
     try:
-        with open('timestamp_notification.log', 'r') as iso_date:
-            iso_date = iso_date.read()
-            last_notification = datetime.fromisoformat(iso_date)
-            current_time = datetime.now(pytz.utc)
-            notif_timediff = current_time - last_notification
-    except FileNotFoundError:
-        print("Couldn't find file timestamp_notification.log.")
+        notification_iso = requests.get(endpoint_read)
+        notification_iso = notification_iso.json()['feeds'][-1]['field1']
+        notification_iso = notification_iso.replace(' ', '+')
+        notif_timediff = None
+        last_notification = datetime.fromisoformat(notification_iso)
+        print(f'Last notification: {last_notification}')
+        current_time = datetime.now(pytz.utc)
+        notif_timediff = current_time - last_notification
     except Exception as err:
         print(err)
+
     if notif_timediff:
         if notif_timediff <= timedelta(hours=3):
             print('It is less than 3 hours since last notification was sent.')
@@ -103,9 +109,16 @@ def main(write=False, read=False):
 
     if notification is True or snow > 8:
         # Writing notification time file
-        with open('timestamp_notification.log', 'w') as file:
-            iso_string = datetime.now(pytz.utc).isoformat()
-            file.write(iso_string)
+        iso_string = datetime.now(pytz.utc).isoformat()
+        post_date = (
+            'https://api.thingspeak.com/update?'
+            f'api_key={creds.things_write_key}&field1='+iso_string
+        )
+        try:
+            requests.get(post_date)
+        except Exception as err:
+            print("Couldn't post timestamp to thingspeak.")
+            print(err)
 
         print('Notification information:')
         print(f'Snow: {snow}')

@@ -243,7 +243,8 @@ def process_frostapi(data_frost, latest_snow_removal, num_iterations) -> dict:
             'snow_height_last': f'{snow_height_last}',
             'max_temp': f'{max_temp:.1f}',
             'min_temp': f'{min_temp:.1f}',
-            'latest_snow_removal': f'{latest_snow_removal_cet}'
+            'latest_snow_removal': f'{latest_snow_removal_cet}',
+            'missing_data': missing_data
         }
     return data_dict
 

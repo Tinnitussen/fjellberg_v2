@@ -15,6 +15,7 @@ creds_local_testing.py
 notes.txt
 test.py
 todo.txt
+sendgrid_boilerplate.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

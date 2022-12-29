@@ -67,7 +67,7 @@ def main(write=False, read=False):
         )
 
     # Send notification message with courier
-    list_id = 'testing'
+    list_id = 'fjellberg_daily'
     template = "BDERY25N6SMHJRM5TPWRN7BGHGFM"
     courier_message(creds.auth_token_courier, list_id, template, data_dict)
 

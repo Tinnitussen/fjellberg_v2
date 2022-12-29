@@ -21,16 +21,11 @@ jobs:
     timeout-minutes: 15
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Download timestamp_log artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: timestamp_log
-          path: timestamp_notification.log
       - uses: actions/checkout@v3
-      - name: Set up Python 3.10
+      - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: "3.10"
+          python-version: "3.11"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -41,12 +36,9 @@ jobs:
           CLIENT_SECRET_FROST: ${{secrets.CLIENT_SECRET_FROST}}
           AUTH_TOKEN_COURIER: ${{secrets.AUTH_TOKEN_COURIER}}
           ENDPOINT_RUTE: ${{secrets.ENDPOINT_RUTE}}
+          THINGS_WRITE_KEY: ${{secrets.THINGS_WRITE_KEY}}
+          THINGS_READ_KEY: ${{secrets.THINGS_READ_KEY}}
+
         run: |
           timedatectl
           python notification.py
-      - name: Upload timestamp_log artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: timestamp_log
-          path: timestamp_notification.log
-          retention-days: 1
