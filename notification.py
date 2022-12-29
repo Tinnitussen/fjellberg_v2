@@ -54,7 +54,7 @@ def main(write=False, read=False):
 
     frost_call_dict = {
         'url': endpoint_frost, 'params': parameters_frost,
-        'auth': (creds.client_id_frost, '')
+        'auth': (creds.client_id_frost, creds.client_secret_frost)
         }
 
     rute_call_dict = {'url': creds.endpoint_rute}
