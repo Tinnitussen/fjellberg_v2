@@ -266,4 +266,5 @@ def twitter_post(access_token, access_token_secret,
         None, api_key, api_key_secret,
         access_token, access_token_secret
         )
-    api.create_tweet(text=post_str)
+    r = api.create_tweet(text=post_str)
+    print(r)
