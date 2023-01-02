@@ -57,7 +57,7 @@ def main(write=False, read=False):
     latest_observation = datetime.fromisoformat(latest_observation)
 
     twitter_str = (
-        "Gullingen siste 12t\n"
+        f"Gullingen siste {NUM_ITERATIONS-1}t\n"
         f"{data_dict['first_timestamp']}\n"
         f"{data_dict['last_timestamp']}\n"
         f"Snø {data_dict['snow']} cm\n"
