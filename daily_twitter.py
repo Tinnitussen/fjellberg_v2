@@ -1,5 +1,6 @@
 import creds
 from datetime import datetime, timedelta
+import os
 from utils.modules import (
     api_call,
     process_frostapi,
@@ -45,7 +46,12 @@ def main(write=False, read=False):
         write_file('data_rute', data_rute)
 
     latest_snow_removal = process_rute(data_rute)
-    data_dict = process_frostapi(data_frost, latest_snow_removal, 13)
+    NUM_ITERATIONS = int(os.environ.get('NUM_ITERATIONS'))
+    data_dict = process_frostapi(
+        data_frost,
+        latest_snow_removal,
+        NUM_ITERATIONS
+        )
 
     latest_observation = data_frost['data'][-1]['referenceTime']
     latest_observation = datetime.fromisoformat(latest_observation)
