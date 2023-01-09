@@ -143,7 +143,7 @@ def process_frostapi(data_frost, latest_snow_removal, num_iterations) -> dict:
             print(f'Sterkeste vindkast: {max_wind_speed} m/s\n')
         else:
             print()
-        if temperature < 1:
+        if temperature < 0.3:
             snow += precipitation
         else:
             rain += precipitation
